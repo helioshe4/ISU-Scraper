@@ -25,7 +25,7 @@ ISU website has the results for every single race skated internationally, as wel
 ## Features
 - Includes location, year of competition, as well as round, so people can easily find the source on the website.
 - Exports all data to an Excel file formatted properly
-<img src="https://imgur.com/gallery/DATp7b2" alt="Excel file" width="200"/>
+![Screenshot](2023-01-17.png)
 
 
 ## Setup
