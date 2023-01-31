@@ -21,11 +21,15 @@ def get_sec(time_str):
         return ' '.join(time_str.split())
 
 def get_season():
-    years = input("Enter the season you would like to look at: ")
+    years = input("Enter the season you would like to look at in the form Year1-Year2 (e.g. 2021-2022): ")
     x = driver.find_element(By.NAME, 'sea')
     drop = Select(x)
-    drop.select_by_visible_text(f'{years} SEASON') # selects the season using dropdown button
-    return years
+    try:
+        drop.select_by_visible_text(f'{years} SEASON') # selects the season using dropdown button
+        return years
+    except NoSuchElementException:
+        print("Please enter a valid season in the form previously shown.")
+        main()
 
 def get_competition_urls(loc_year_type_list):
     competition_url_list = []
@@ -61,7 +65,6 @@ def men_get_races(comp_url, race_urls):
         else:
             race_urls.update({element.get_attribute("href"): 500})  # extracts url from each element
 
-    #print(race_urls)
     return race_urls # dictionary
 
 def women_get_races(comp_url, race_urls):
