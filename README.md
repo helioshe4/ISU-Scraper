@@ -1,5 +1,5 @@
 # ISU Scraper
-> Webscraper using BeautifulSoup, requests, selenium, and pandas.  Takes results from every international-level speed skating competition and returns skaters times for each race, as well as their times for each lap during that race.  Outputs results to an Excel file.
+> Webscraper using selenium, BeautifulSoup, requests, and pandas.  Takes results from every international-level speed skating competition and returns skaters times for each race, as well as their times for each lap during that race.  Outputs results to an Excel file.
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -7,7 +7,6 @@
 * [Features](#features)
 * [Setup](#setup)
 * [Usage](#usage)
-* [Project Status](#project-status)
 * [Room for Improvement](#room-for-improvement)
 * [Acknowledgements](#acknowledgements)
 * [Contact](#contact)
@@ -19,7 +18,7 @@ ISU website has the results for every single race skated internationally, as wel
 
 
 ## Technologies Used
-- Python 3.1
+- `python3 --version`: 3.10.12
 
 
 ## Features
@@ -29,9 +28,9 @@ ISU website has the results for every single race skated internationally, as wel
 
 
 ## Setup
-pip install bs4  
-pip install selenium  
-download chromedriver for selenium - https://chromedriver.chromium.org/downloads
+```
+pip install -r requirements.txt
+```
 
 ## Usage
 A usage case is provided below
@@ -39,18 +38,15 @@ A usage case is provided below
 Follow the prompts provided by program.  
 '**>**' Denotes user input  
 Enter the season you would like to look at:   
-\> 2020-2021 *enter the season in this format: year1-year2 where year2 = year1 + 1*  
+\> **2020-2021** *enter the season in this format: year1-year2 where year2 = year1 + 1*  
 
-Which gender would you like the results for? (Type 'Men' or 'Women') 
-\> **Women**   
+Which gender would you like the results for? (Type '1' for Men or '2' for Women)  
+\> **2**   
 
 The results are about to be saved in a file, please name the file:  
 \> **Women's 2021-2022 Results**  
 
 And a file should be downloaded called *Women's 2021-2022 Results.xlsx* where you can find the results.  
-
-## Project Status
-Project is: _complete_.
 
 
 ## Room for Improvement
