@@ -1,16 +1,20 @@
-from bs4 import BeautifulSoup
 import requests
+import pandas as pd
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import pandas as pd
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
+
 from Row import Row
 
-s = Service("C:\Program Files (x86)\chromedriver.exe")
-driver = webdriver.Chrome(service=s)
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
+driver = webdriver.Chrome(options=chrome_options)
 driver.get("https://shorttrack.sportresult.com/")
-driver.minimize_window()
+
 
 def get_sec(time_str):
     """Get seconds from time."""
@@ -20,16 +24,18 @@ def get_sec(time_str):
     except:
         return ' '.join(time_str.split())
 
+
 def get_season():
-    years = input("Enter the season you would like to look at in the form Year1-Year2 (e.g. 2021-2022): ")
-    x = driver.find_element(By.NAME, 'sea')
-    drop = Select(x)
-    try:
-        drop.select_by_visible_text(f'{years} SEASON') # selects the season using dropdown button
-        return years
-    except NoSuchElementException:
-        print("Please enter a valid season in the form previously shown.")
-        main()
+    while True:
+        years = input("Enter the season you would like to look at in the form Year1-Year2 (e.g. 2021-2022): ")
+        x = driver.find_element(By.NAME, 'sea')
+        drop = Select(x)
+        try:
+            drop.select_by_visible_text(f'{years} SEASON') # selects the season using dropdown button
+            return years
+        except NoSuchElementException:
+            print("Please enter a valid season in the form previously shown.")
+
 
 def get_competition_urls(loc_year_type_list):
     competition_url_list = []
@@ -46,6 +52,7 @@ def get_competition_urls(loc_year_type_list):
         loc_year_type_list.append(element.text)  # adds the text of the link to the list that contains location, year, type
         competition_url_list.append(element.get_attribute("href")) # adds the url of the link to the comp url list
     return competition_url_list
+
 
 # takes the url for a comp and returns a dictionary with all the race waves as the key, and the distance as the value
 def men_get_races(comp_url, race_urls):
@@ -67,6 +74,7 @@ def men_get_races(comp_url, race_urls):
 
     return race_urls # dictionary
 
+
 def women_get_races(comp_url, race_urls):
     driver.get(comp_url)
     home_button = driver.find_element(By.LINK_TEXT, 'HOME') # clicks the home button once it gets to the link, to access all the links
@@ -86,6 +94,7 @@ def women_get_races(comp_url, race_urls):
 
     #print(race_urls)
     return race_urls # dictionary
+
 
 def scrape_round(round_url, race_dict, list_of_rows, loc_year_type):
     html_text = requests.get(round_url).text
@@ -143,6 +152,7 @@ def get_splits_urls(round_url):
 
     return splits_urls
 
+
 def scrape_splits(split_url, list_of_splits):
     html_text = requests.get(split_url).text
     soup = BeautifulSoup(html_text, 'lxml')
@@ -180,17 +190,17 @@ def scrape_splits(split_url, list_of_splits):
     list_of_splits = list_of_splits + list_of_race_splits
     return list_of_splits
 
+
 def main():
     race_urls = {}
     loc_year_type_list = []
     list_of_rows = []
-    splits_url = []
     get_season()
     comp_urls = get_competition_urls(loc_year_type_list)
 
-    gender = input("Which gender would you like the results for? (Type 'Men' or 'Women') \n> ")
+    gender = int(input("Which gender would you like the results for? ('1' for Men or '2' for 'Women') \n> "))
 
-    if gender.lower() == 'men':
+    if gender == 1:
         for j in range(len(comp_urls)):
             race_dict = men_get_races(comp_urls[j], race_urls)
             listof_race_urls = list(race_dict.keys())
@@ -199,7 +209,7 @@ def main():
                 scrape_round(listof_race_urls[i], race_dict, list_of_rows, loc_year_type_list[j])
             race_urls = {}
 
-    elif gender.lower() == 'women':
+    elif gender == 2:
         for j in range(len(comp_urls)):
             race_dict = women_get_races(comp_urls[j], race_urls)
             listof_race_urls = list(race_dict.keys())
@@ -208,17 +218,25 @@ def main():
                 scrape_round(listof_race_urls[i], race_dict, list_of_rows, loc_year_type_list[j])
             race_urls = {}
     else:
-        print("Please enter either 'Men' or 'Women'")
+        print("Please enter either '1' for Men or '2' for Women")
         main()
 
     df = pd.DataFrame()
+    columns = {
+        'Location, Year, Type': [],
+        'Distance': [],
+        'Round': [],
+        'Name': [],
+        'Country': [],
+        'Time': []
+    }
     list1 = []
     list2 = []
     list3 = []
     list4 = []
     list5 = []
     list6 = []
-    list7 = [] # lap 1
+    list7 = []  # lap 1
     list8 = []  # lap 2
     list9 = []  # lap 3
     list10 = []  # lap 4
@@ -337,6 +355,8 @@ def main():
     file_name = input("The results are about to be saved in a file, please name the file: ")
     df.to_excel(f'{file_name}.xlsx')
 
-main()
+
+if __name__ == "__main__":
+    main()
 
 
